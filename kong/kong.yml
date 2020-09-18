@@ -1,0 +1,14 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+- name: doh
+  url: https://cloudflare-dns.com/dns-query
+  tags:
+  - doh
+  routes:
+  - name: doh-route
+    paths:
+    - /
+  plugins:
+  - name: prometheus

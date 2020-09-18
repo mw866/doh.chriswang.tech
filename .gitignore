@@ -1,0 +1,4 @@
+*.DS_Store
+kong/kong-vol/
+!kong/kong-vol/kong.yml
+.vagrant/
