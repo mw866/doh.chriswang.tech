@@ -2,3 +2,4 @@
 kong/kong-vol/
 !kong/kong-vol/kong.yml
 .vagrant/
+*.pem
