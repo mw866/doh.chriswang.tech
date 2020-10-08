@@ -57,21 +57,6 @@ job "connect" {
       }
       connect {
         sidecar_service {
-            proxy {
-            #https://www.consul.io/docs/connect/registration/sidecar-service
-            config {
-              protocol = "http"
-              connect_timeout_ms = 300000
-              local_connect_timeout_ms = 300000
-              limits {
-                max_pending_requests = 10000
-              }
-              passive_health_check {
-                interval = 60000
-                max_failures = 100
-              }
-            }
-          }
         }     
       }
     } 
@@ -90,33 +75,16 @@ job "connect" {
         }
       }
       connect {
-        sidecar_service {
-          proxy {
-            #https://www.consul.io/docs/connect/registration/sidecar-service
-            config {
-              protocol = "http"
-              connect_timeout_ms = 300000
-              local_connect_timeout_ms = 300000
-              limits {
-                max_pending_requests = 10000
-              }
-              passive_health_check {
-                interval = 60000
-                max_failures = 100
-              }
-            }
-          }
-          
+        sidecar_service {       
         }
       }
     }    
     task "kong" {
       driver = "docker"
       config {
-        image = "kong:2.1.3-ubuntu"
+        image = "kong:2.1.4-alpine"
         # Image below is for debugging only with sudo access.
         # image = "mw866/kong:latest"
-        # network_mode = "bridge"
         ports = ["http", "admin", "https"]
         mounts = {
           type = "bind"
@@ -172,19 +140,6 @@ job "connect" {
               destination_name = "kong-metrics"
               local_bind_port  = 8011
             }
-            #https://www.consul.io/docs/connect/registration/sidecar-service
-            config {
-              protocol = "http"
-              connect_timeout_ms = 300000
-              local_connect_timeout_ms = 300000
-              limits {
-                max_pending_requests = 10000
-              }
-              passive_health_check {
-                interval = 60000
-                max_failures = 100
-              }
-            }
           }
         }
       }
@@ -193,7 +148,6 @@ job "connect" {
       driver = "docker"
       config {
         image = "mw866/cloudflared:2020.9.3-6-g812244d"
-        # network_mode = "bridge"
         ports = ["metrics"]
         mounts = {
           type = "bind"
