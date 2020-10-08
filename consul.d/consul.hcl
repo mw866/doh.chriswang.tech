@@ -12,7 +12,7 @@ acl = {
   default_policy = "allow"
   enable_token_persistence = true
 }
-bind_addr = "192.168.0.123"
+bind_addr = "{{ GetPrivateIP }}"
 performance {
   raft_multiplier = 1
 }

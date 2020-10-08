@@ -3,7 +3,7 @@ _transform: true
 
 services:
 - name: doh
-  url: https://cloudflare-dns.com/dns-query
+  url: http://httpbin.chriswang.me/
   tags:
   - doh
   routes:

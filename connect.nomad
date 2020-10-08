@@ -29,11 +29,11 @@ job "connect" {
     network {
         mode = "bridge"
         port "http" {
-          // static = 8000
+          static = 8000
           to = 8000
         }
         port "https" {
-          // static = 8443
+          static = 8443
           to = 8443
         }
         port "admin" {
@@ -66,16 +66,13 @@ job "connect" {
       check {
         address_mode = "driver"
         name = "http"
-        path = "/dns-query?name=example.com&type=a"
+        path = "/status/200"
         type     = "http"
         interval = "10s"
         timeout  = "2s"
-        header {
-          accept = ["application/dns-json"]
-        }
       }
       connect {
-        sidecar_service {       
+        sidecar_service {    
         }
       }
     }    
@@ -137,7 +134,7 @@ job "connect" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "kong-metrics"
+              destination_name = "kong-http"
               local_bind_port  = 8011
             }
           }
@@ -160,7 +157,7 @@ job "connect" {
         args = [
           "--hostname", "connect.chriswang.tech",
           "--origincert", "/etc/cloudflared/cert.pem",
-          "--url", "http://${NOMAD_UPSTREAM_ADDR_kong_metrics}",
+          "--url", "http://${NOMAD_UPSTREAM_ADDR_kong_http}",
           "--lb-pool", "connect",
           "--metrics", "0.0.0.0:8002", 
           "--tag", "NOMAD_ALLOC_ID=${NOMAD_ALLOC_ID}",
@@ -170,28 +167,8 @@ job "connect" {
       }
       resources {
         cpu    = 200 
-        memory = 1024 
+        memory = 256 
       }
     }
-    
-    // task "await-kong" {
-    //   driver = "docker"
-    //   config {
-    //     image        = "gcr.io/kubernetes-e2e-test-images/dnsutils:1.3"
-    //     command      = "sh"
-    //     args         = ["-c", "echo -n 'Waiting for service'; until dig +short ANY kong-metrics.service.consul @127.0.0.1 -p 8600 2>&1 >/dev/null; do echo '.'; sleep 10; done"]
-    //     network_mode = "host"
-    //   }
-
-    //   resources {
-    //     cpu    = 200
-    //     memory = 128
-    //   }
-
-    //   lifecycle {
-    //     hook    = "prestart"
-    //     sidecar = false
-    //   }
-    // }
   }
 } 
