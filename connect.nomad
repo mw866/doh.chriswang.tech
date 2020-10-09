@@ -1,3 +1,6 @@
+# The job uses sperate groups for cloudflared and kong. 
+# cloudflared is connected the upstream, Kong, over Consul Connect.
+
 job "connect" {
   datacenters = ["dc1"]
   type = "service"

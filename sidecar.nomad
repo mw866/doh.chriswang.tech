@@ -1,3 +1,6 @@
+# The job puts cloudflared and kong in the same task group. 
+# cloudflared communicates to Kong in the same network namespace.
+
 job "sidecar" {
   datacenters = ["dc1"]
   type = "service"
