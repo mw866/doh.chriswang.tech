@@ -41,9 +41,65 @@ consul agent -dev -node=local -ui --client=0.0.0.0
 
 1. Set up Nomad by following the [officla deployment guide](https://learn.hashicorp.com/tutorials/nomad/production-deployment-guide-vm-with-consul). Make sure you install the `arm64` binary. Default URL of Nomad UI : http://HOST_IP:8500
 
+The example `systemd` unit file is as below.
+
+```
+$ systemctl cat nomad.service
+
+# /etc/systemd/system/nomad.service
+[Unit]
+Description=Nomad
+Documentation=https://nomadproject.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/nomad agent -config /home/ubuntu/doh.chriswang.tech/nomad.d
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=infinity
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=2
+StartLimitBurst=3
+StartLimitIntervalSec=10
+TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target
+```
+
 
 2. Set up Consul by following the [officla deployment guide](https://learn.hashicorp.com/tutorials/consul/deployment-guide). Make sure you install the `arm64` binary. Default URL of Consul UI: http://HOST_IP:4646
 
+The example `systemd` unit file is as below.
+
+```
+$systemctl cat consul.service
+
+# /etc/systemd/system/consul.service
+[Unit]
+Description="Consul"
+Documentation=https://www.consul.io/
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+# The configuration provided by this tutorial is the recommended one for a Consul datacenter running multiple server nodes. In test environemnts or environments where only one Consul server is deployed you should>
+Type=exec
+#User=consul
+#Group=consul
+ExecStart=/usr/local/bin/consul agent -config-dir=/home/ubuntu/doh.chriswang.tech/consul.d
+ExecReload=/usr/local/bin/consul reload
+ExecStop=/usr/local/bin/consul leave
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+```
 
 3.  Run the nomad job.
 ```
